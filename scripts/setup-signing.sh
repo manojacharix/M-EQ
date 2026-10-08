@@ -1,11 +1,11 @@
 #!/bin/zsh
-# One-time: creates a self-signed "BassEQ Local Signing" code-signing identity in its own keychain.
+# One-time: creates a self-signed "M-EQ Local Signing" code-signing identity in its own keychain.
 # A stable signature means macOS keeps the System Audio Recording permission across rebuilds
 # (ad-hoc signatures change every build, so macOS would ask again each time).
 set -euo pipefail
-NAME="BassEQ Local Signing"
-CONF="$HOME/.config/basseq"
-KC="$HOME/Library/Keychains/basseq-signing.keychain-db"
+NAME="M-EQ Local Signing"
+CONF="$HOME/.config/meq"
+KC="$HOME/Library/Keychains/meq-signing.keychain-db"
 if security find-identity -p codesigning "$KC" 2>/dev/null | grep -q "$NAME"; then
   echo "Signing identity already exists"; exit 0
 fi

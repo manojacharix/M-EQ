@@ -1,9 +1,9 @@
 #!/bin/zsh
-# Builds Bass EQ.
+# Builds M-EQ.
 #
-#   ./build.sh             BassEQ.app next to this script, signed with the stable local identity
+#   ./build.sh             M-EQ.app next to this script, signed with the stable local identity
 #                          (run scripts/setup-signing.sh once; falls back to ad-hoc if it's missing).
-#   ./build.sh --unsigned  dist/BassEQ.app + dist/BassEQ.dmg with no certificate: a universal
+#   ./build.sh --unsigned  dist/M-EQ.app + dist/M-EQ.dmg with no certificate: a universal
 #                          (Apple silicon + Intel) build with only the ad-hoc signature macOS
 #                          requires to launch anything. Use this to share the app.
 set -euo pipefail
@@ -12,16 +12,16 @@ cd "$(dirname "$0")"
 UNSIGNED=false
 [[ "${1:-}" == "--unsigned" ]] && UNSIGNED=true
 
-NAME="BassEQ Local Signing"
-KC="$HOME/Library/Keychains/basseq-signing.keychain-db"
-PASSFILE="$HOME/.config/basseq/keychain-password"
+NAME="M-EQ Local Signing"
+KC="$HOME/Library/Keychains/meq-signing.keychain-db"
+PASSFILE="$HOME/.config/meq/keychain-password"
 
 if $UNSIGNED; then
   mkdir -p dist
-  APP=dist/BassEQ.app
+  APP=dist/M-EQ.app
   ARCHS=(arm64 x86_64)
 else
-  APP=BassEQ.app
+  APP=M-EQ.app
   ARCHS=("$(uname -m)")
 fi
 
@@ -31,13 +31,13 @@ cp Resources/Info.plist "$APP/Contents/Info.plist"
 
 SLICES=()
 for arch in $ARCHS; do
-  out="$APP/Contents/MacOS/BassEQ-$arch"
+  out="$APP/Contents/MacOS/M-EQ-$arch"
   swiftc -O -parse-as-library -swift-version 5 \
     -target "$arch-apple-macos14.4" \
-    Sources/BassEQ.swift -o "$out"
+    Sources/MEQ.swift -o "$out"
   SLICES+=("$out")
 done
-lipo -create $SLICES -output "$APP/Contents/MacOS/BassEQ"
+lipo -create $SLICES -output "$APP/Contents/MacOS/M-EQ"
 rm -f $SLICES
 
 if $UNSIGNED; then
@@ -49,10 +49,10 @@ if $UNSIGNED; then
   trap 'rm -rf "$STAGE"' EXIT
   cp -R "$APP" "$STAGE/"
   ln -s /Applications "$STAGE/Applications"
-  rm -f dist/BassEQ.dmg dist/BassEQ.zip
-  hdiutil create -quiet -volname "Bass EQ" -srcfolder "$STAGE" -fs HFS+ -format UDZO -ov dist/BassEQ.dmg
-  echo "Built $(pwd)/$APP (no certificate, $(lipo -archs "$APP/Contents/MacOS/BassEQ"))"
-  echo "Disk image $(pwd)/dist/BassEQ.dmg"
+  rm -f dist/M-EQ.dmg dist/M-EQ.zip
+  hdiutil create -quiet -volname "M-EQ" -srcfolder "$STAGE" -fs HFS+ -format UDZO -ov dist/M-EQ.dmg
+  echo "Built $(pwd)/$APP (no certificate, $(lipo -archs "$APP/Contents/MacOS/M-EQ"))"
+  echo "Disk image $(pwd)/dist/M-EQ.dmg"
 elif [[ -f "$KC" && -f "$PASSFILE" ]]; then
   security unlock-keychain -p "$(cat "$PASSFILE")" "$KC"
   # Self-signed certs aren't "trusted", so codesign only finds them by SHA-1 hash, not by name.
