@@ -127,6 +127,24 @@ macOS remembers your permission when you rebuild or update the app.
 You can skip this step. `build.sh` then falls back to ad-hoc signing, and macOS will ask for permission
 again after every rebuild.
 
+### Build without a certificate (to share the app)
+
+```sh
+./build.sh --unsigned
+```
+
+This makes `dist/BassEQ.app` and `dist/BassEQ.zip`: a universal build (Apple silicon and Intel) that
+uses no certificate at all. It carries only an *ad-hoc* signature, because Apple silicon Macs refuse to
+launch code with no signature whatsoever. It doesn't touch your normal `BassEQ.app`.
+
+Someone opening a downloaded copy will see *"Bass EQ can't be opened because Apple cannot check it for
+malicious software"*, since it isn't notarized. To open it anyway, either:
+- right-click the app, choose **Open**, then **Open** again (on macOS 15 and later: try to open it once,
+  then click **Open Anyway** in System Settings → Privacy & Security), or
+- run `xattr -dr com.apple.quarantine /path/to/BassEQ.app`.
+
+They'll also get the usual audio permission prompt on first launch.
+
 ## Privacy
 
 - Audio is processed in memory, in real time, and goes straight to your speaker. **Nothing is recorded,
