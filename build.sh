@@ -3,7 +3,7 @@
 #
 #   ./build.sh             BassEQ.app next to this script, signed with the stable local identity
 #                          (run scripts/setup-signing.sh once; falls back to ad-hoc if it's missing).
-#   ./build.sh --unsigned  dist/BassEQ.app + dist/BassEQ.zip with no certificate: a universal
+#   ./build.sh --unsigned  dist/BassEQ.app + dist/BassEQ.dmg with no certificate: a universal
 #                          (Apple silicon + Intel) build with only the ad-hoc signature macOS
 #                          requires to launch anything. Use this to share the app.
 set -euo pipefail
@@ -44,10 +44,15 @@ if $UNSIGNED; then
   # Apple silicon refuses to run code with no signature at all, so this is the minimum:
   # an ad-hoc signature, no certificate, no identity.
   codesign --force --sign - "$APP"
-  rm -f dist/BassEQ.zip
-  ditto -c -k --keepParent "$APP" dist/BassEQ.zip
+  # Disk image with the usual drag-to-Applications layout.
+  STAGE=$(mktemp -d)
+  trap 'rm -rf "$STAGE"' EXIT
+  cp -R "$APP" "$STAGE/"
+  ln -s /Applications "$STAGE/Applications"
+  rm -f dist/BassEQ.dmg dist/BassEQ.zip
+  hdiutil create -quiet -volname "Bass EQ" -srcfolder "$STAGE" -fs HFS+ -format UDZO -ov dist/BassEQ.dmg
   echo "Built $(pwd)/$APP (no certificate, $(lipo -archs "$APP/Contents/MacOS/BassEQ"))"
-  echo "Zipped $(pwd)/dist/BassEQ.zip"
+  echo "Disk image $(pwd)/dist/BassEQ.dmg"
 elif [[ -f "$KC" && -f "$PASSFILE" ]]; then
   security unlock-keychain -p "$(cat "$PASSFILE")" "$KC"
   # Self-signed certs aren't "trusted", so codesign only finds them by SHA-1 hash, not by name.

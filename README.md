@@ -133,12 +133,15 @@ again after every rebuild.
 ./build.sh --unsigned
 ```
 
-This makes `dist/BassEQ.app` and `dist/BassEQ.zip`: a universal build (Apple silicon and Intel) that
+This makes `dist/BassEQ.app` and `dist/BassEQ.dmg`: a universal build (Apple silicon and Intel) that
 uses no certificate at all. It carries only an *ad-hoc* signature, because Apple silicon Macs refuse to
 launch code with no signature whatsoever. It doesn't touch your normal `BassEQ.app`.
 
-Someone opening a downloaded copy will see *"Bass EQ can't be opened because Apple cannot check it for
-malicious software"*, since it isn't notarized. To open it anyway, either:
+To install from the DMG: open `BassEQ.dmg`, drag **BassEQ** onto the **Applications** shortcut, eject
+the disk image and open Bass EQ from Applications.
+
+Because it isn't notarized, the first launch of a downloaded copy shows *"Bass EQ can't be opened
+because Apple cannot check it for malicious software"*. To open it anyway, either:
 - right-click the app, choose **Open**, then **Open** again (on macOS 15 and later: try to open it once,
   then click **Open Anyway** in System Settings → Privacy & Security), or
 - run `xattr -dr com.apple.quarantine /path/to/BassEQ.app`.
