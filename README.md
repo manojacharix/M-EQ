@@ -9,6 +9,53 @@ calls) before it reaches the speaker. It needs no audio driver, no virtual devic
 The feature set is inspired by the equalizers in popular headphone companion apps: a simple three-slider
 mode, a 10-band graphic mode, a separate bass boost control and one-tap sound profiles.
 
+**[⬇ Download BassEQ.dmg](https://github.com/manojacharix/BassEQ/releases/latest/download/BassEQ.dmg)** · then follow the [install steps](#download-and-install) below. macOS 14.4 or later.
+
+---
+
+## Download and install
+
+### 1. Download
+Download **[BassEQ.dmg](https://github.com/manojacharix/BassEQ/releases/latest/download/BassEQ.dmg)** from the
+[latest release](https://github.com/manojacharix/BassEQ/releases/latest). It works on Apple silicon and Intel Macs
+running **macOS 14.4 or later**.
+
+### 2. Install
+1. Double-click **BassEQ.dmg** to open it.
+2. Drag **BassEQ** onto the **Applications** folder shortcut in the same window.
+3. Eject the disk image (click ⏏ next to "Bass EQ" in Finder's sidebar). You can delete the DMG afterwards.
+
+### 3. Open it the first time
+Bass EQ is free and open source, but it isn't notarized by Apple (that needs a paid developer account), so
+macOS blocks the first launch with a warning that Apple can't verify the app is free of malware.
+Open it once like this, and after that it opens normally:
+
+**macOS 15 Sequoia and later**
+1. Open **Applications** and double-click **BassEQ**. When the warning appears, click **Done**.
+2. Open **System Settings → Privacy & Security** and scroll down to **Security**.
+3. Next to *"BassEQ" was blocked to protect your Mac*, click **Open Anyway**, enter your password, then click **Open Anyway** again.
+
+**macOS 14 Sonoma**
+1. Open **Applications**, **right-click** (or Control-click) **BassEQ** and choose **Open**.
+2. Click **Open** in the dialog.
+
+**Or, from Terminal (any version):**
+```sh
+xattr -dr com.apple.quarantine /Applications/BassEQ.app
+```
+
+### 4. Allow audio access
+macOS then asks: *"Bass EQ would like to record this computer's audio."* Click **Allow**.
+The app needs this to equalize your sound. Nothing is recorded, saved or sent anywhere.
+
+If you missed the prompt: **System Settings → Privacy & Security → Screen & System Audio Recording**,
+turn on **Bass EQ**, then quit and reopen the app.
+
+### 5. Use it
+A slider icon appears in the menu bar. Click it, connect a Bluetooth speaker or headphones, and pick a
+preset or move the sliders. To start Bass EQ automatically, add it in
+**System Settings → General → Login Items**.
+
 ---
 
 ## Features
@@ -95,9 +142,9 @@ audio. The EQ runs 15 filters per channel in native code with no allocations on 
 
 - **macOS 14.4 (Sonoma) or later.** Bass EQ uses Core Audio process taps, added in 14.4. It has been
   developed and tested on macOS 26 on Apple silicon.
-- **Xcode Command Line Tools** to build it (`xcode-select --install`). No prebuilt download yet.
+- To build from source: **Xcode Command Line Tools** (`xcode-select --install`). Not needed for the DMG.
 
-## Install
+## Build from source
 
 ```sh
 git clone https://github.com/manojacharix/BassEQ.git
@@ -107,16 +154,13 @@ cd BassEQ
 open BassEQ.app
 ```
 
-A slider icon appears in the menu bar. Click it to open the equalizer.
+A slider icon appears in the menu bar. Click it to open the equalizer. Builds you make yourself
+don't get the Gatekeeper warning (only downloaded copies do).
 
 To keep it, move `BassEQ.app` into `/Applications`. To start it at login, add it in
 **System Settings → General → Login Items**.
 
-### The permission prompt
-
-On first launch macOS asks: *"Bass EQ would like to record this computer's audio."* Click **Allow**.
-Without it the EQ only receives silence. You can change it later in **System Settings → Privacy &
-Security → Screen & System Audio Recording**.
+On first launch, allow audio access as described in [step 4](#4-allow-audio-access) above.
 
 ### Signing
 
@@ -126,6 +170,18 @@ macOS remembers your permission when you rebuild or update the app.
 
 You can skip this step. `build.sh` then falls back to ad-hoc signing, and macOS will ask for permission
 again after every rebuild.
+
+### Build the DMG yourself
+
+```sh
+./build.sh --unsigned
+```
+
+This makes `dist/BassEQ.app` and `dist/BassEQ.dmg`: a universal build (Apple silicon and Intel) that
+uses no certificate at all. It carries only an *ad-hoc* signature, because Apple silicon Macs refuse to
+launch code with no signature whatsoever. It doesn't touch your normal `BassEQ.app`.
+
+People who download it install it with the [Download and install](#download-and-install) steps above.
 
 ## Privacy
 
@@ -143,6 +199,7 @@ again after every rebuild.
 | Signal meter stays empty while music plays | Allow Bass EQ under Privacy & Security → Screen & System Audio Recording, then relaunch. |
 | No sound at all | Quit Bass EQ from its panel; audio returns to normal immediately. Then check `~/Library/Logs/BassEQ.log`. |
 | Distortion when boosting | Lower **Output trim**, turn on **Low cut**, or use a smaller boost. |
+| "Apple can't verify BassEQ is free of malware" | Expected for a downloaded copy; see [step 3](#3-open-it-the-first-time). |
 | Panel freezes right after a rebuild | macOS is waiting on a permission prompt (only happens without stable signing). Answer it, and run `./scripts/setup-signing.sh`. |
 
 Command-line helpers:
