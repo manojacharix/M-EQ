@@ -13,8 +13,12 @@ open BassEQ.app     # slider icon appears in the menu bar
 ./test.sh loop|sweep|40|60|90|150|1000          # plays bass test audio
 ```
 
-macOS asks for **System Audio Recording** permission on first launch, and again after every rebuild
-(ad-hoc signatures change). Allow it, otherwise the EQ receives silence.
+macOS asks for **System Audio Recording** permission on first launch. Allow it, otherwise the EQ receives silence.
+
+Signing: run `./scripts/setup-signing.sh` once on a new Mac. It creates a self-signed "BassEQ Local Signing"
+identity in its own keychain (`~/Library/Keychains/basseq-signing.keychain-db`, password in
+`~/.config/basseq/`), so every build has the same signature and macOS keeps the permission. Without it,
+`build.sh` falls back to ad-hoc signing and macOS re-asks after each rebuild.
 Status is logged to `~/Library/Logs/BassEQ.log`.
 
 ## Features
