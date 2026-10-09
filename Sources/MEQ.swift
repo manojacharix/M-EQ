@@ -1,4 +1,4 @@
-// BassEQ: a menu-bar equalizer for Bluetooth speakers.
+// M-EQ: a menu-bar equalizer for Bluetooth speakers.
 //
 // How it works (no audio driver needed, macOS 14.4+):
 //   1. A global Core Audio process tap captures everything the system plays and
@@ -19,9 +19,9 @@ import CoreAudio
 import AudioToolbox
 import os
 
-/// Appends a timestamped line to ~/Library/Logs/BassEQ.log (status changes only, so it stays small).
+/// Appends a timestamped line to ~/Library/Logs/M-EQ.log (status changes only, so it stays small).
 func appLog(_ message: String) {
-    let url = FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("Library/Logs/BassEQ.log")
+    let url = FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("Library/Logs/M-EQ.log")
     let line = "\(ISO8601DateFormatter().string(from: Date())) \(message)\n"
     if let h = try? FileHandle(forWritingTo: url) {
         h.seekToEndOfFile(); h.write(Data(line.utf8)); try? h.close()
@@ -396,7 +396,7 @@ final class EQEngine: ObservableObject {
 
     private let defaults = UserDefaults.standard
     private let dsp = EQDSP()
-    private let ioQueue = DispatchQueue(label: "basseq.io", qos: .userInteractive)
+    private let ioQueue = DispatchQueue(label: "meq.io", qos: .userInteractive)
     private var profiles: [String: EQProfile] = [:]
     private var currentUID: String?
     private var runningDevice = AudioDeviceID(kAudioObjectUnknown)
@@ -408,6 +408,7 @@ final class EQEngine: ObservableObject {
     private var everHeardAudio = false
 
     init() {
+        Self.migrateFromBassEQ(into: defaults)
         defaults.register(defaults: ["enabled": true, "allOutputs": false])
         enabled = defaults.bool(forKey: "enabled")
         allOutputs = defaults.bool(forKey: "allOutputs")
@@ -435,6 +436,19 @@ final class EQEngine: ObservableObject {
     }
 
     // MARK: Persistence
+
+    /// The app used to be called Bass EQ (com.manojachari.basseq). Copy its settings once so
+    /// per-device profiles and custom presets survive the rename.
+    private static func migrateFromBassEQ(into defaults: UserDefaults) {
+        guard !defaults.bool(forKey: "migratedFromBassEQ") else { return }
+        defaults.set(true, forKey: "migratedFromBassEQ")
+        guard defaults.object(forKey: "profiles") == nil,
+              let old = UserDefaults(suiteName: "com.manojachari.basseq") else { return }
+        let keys = ["enabled", "allOutputs", "profiles", "userPresets", "lastUID", "lastName",
+                    "targetName", "bassDB", "frequency", "mode", "lowCut"]
+        for key in keys { if let value = old.object(forKey: key) { defaults.set(value, forKey: key) } }
+        appLog("migrated settings from Bass EQ")
+    }
 
     private func load<T: Decodable>(_ type: T.Type, _ key: String) -> T? {
         defaults.data(forKey: key).flatMap { try? JSONDecoder().decode(T.self, from: $0) }
@@ -552,14 +566,14 @@ final class EQEngine: ObservableObject {
         let me = ownProcessObject()
         let tap = CATapDescription(stereoGlobalTapButExcludeProcesses: me == kAudioObjectUnknown ? [] : [me])
         tap.uuid = UUID()
-        tap.name = "BassEQ Tap"
+        tap.name = "M-EQ Tap"
         tap.isPrivate = true
         tap.muteBehavior = .mutedWhenTapped
         try check(AudioHardwareCreateProcessTap(tap, &tapID), "create system audio tap")
 
         let description: [String: Any] = [
-            kAudioAggregateDeviceNameKey: "BassEQ",
-            kAudioAggregateDeviceUIDKey: "basseq-\(UUID().uuidString)",
+            kAudioAggregateDeviceNameKey: "M-EQ",
+            kAudioAggregateDeviceUIDKey: "meq-\(UUID().uuidString)",
             kAudioAggregateDeviceMainSubDeviceKey: deviceUID,
             kAudioAggregateDeviceIsPrivateKey: true,
             kAudioAggregateDeviceIsStackedKey: false,
@@ -828,7 +842,7 @@ struct PanelView: View {
         VStack(alignment: .leading, spacing: 4) {
             HStack {
                 VStack(alignment: .leading, spacing: 1) {
-                    Text("Equalizer").font(.headline)
+                    Text("M-EQ").font(.headline)
                     Text(engine.deviceName ?? "No speaker yet").font(.caption).foregroundStyle(.secondary)
                 }
                 Spacer()
@@ -886,7 +900,7 @@ struct PanelView: View {
 }
 
 @main
-struct BassEQApp: App {
+struct MEQApp: App {
     @StateObject private var engine = EQEngine()
 
     init() {
@@ -904,7 +918,7 @@ struct BassEQApp: App {
     }
 }
 
-// MARK: - Self test (BassEQ.app/Contents/MacOS/BassEQ --selftest | --devices)
+// MARK: - Self test (M-EQ.app/Contents/MacOS/M-EQ --selftest | --devices)
 
 enum SelfTest {
     static func listDevices() -> Never {

@@ -1,59 +1,61 @@
-# Bass EQ
+# M-EQ
 
 A free, open-source menu-bar equalizer for Bluetooth speakers on macOS.
 
+*Formerly Bass EQ. It started as a bass control and grew into a full equalizer.*
+
 macOS has no built-in equalizer for system audio, and most Bluetooth speakers ship with a fixed sound.
-Bass EQ sits in your menu bar and reshapes everything your Mac plays (music, YouTube, Spotify, games,
+M-EQ sits in your menu bar and reshapes everything your Mac plays (music, YouTube, Spotify, games,
 calls) before it reaches the speaker. It needs no audio driver, no virtual device and no account.
 
 The feature set is inspired by the equalizers in popular headphone companion apps: a simple three-slider
 mode, a 10-band graphic mode, a separate bass boost control and one-tap sound profiles.
 
-**[⬇ Download BassEQ.dmg](https://github.com/manojacharix/BassEQ/releases/latest/download/BassEQ.dmg)** · then follow the [install steps](#download-and-install) below. macOS 14.4 or later.
+**[⬇ Download M-EQ.dmg](https://github.com/manojacharix/M-EQ/releases/latest/download/M-EQ.dmg)** · then follow the [install steps](#download-and-install) below. macOS 14.4 or later.
 
 ---
 
 ## Download and install
 
 ### 1. Download
-Download **[BassEQ.dmg](https://github.com/manojacharix/BassEQ/releases/latest/download/BassEQ.dmg)** from the
-[latest release](https://github.com/manojacharix/BassEQ/releases/latest). It works on Apple silicon and Intel Macs
+Download **[M-EQ.dmg](https://github.com/manojacharix/M-EQ/releases/latest/download/M-EQ.dmg)** from the
+[latest release](https://github.com/manojacharix/M-EQ/releases/latest). It works on Apple silicon and Intel Macs
 running **macOS 14.4 or later**.
 
 ### 2. Install
-1. Double-click **BassEQ.dmg** to open it.
-2. Drag **BassEQ** onto the **Applications** folder shortcut in the same window.
-3. Eject the disk image (click ⏏ next to "Bass EQ" in Finder's sidebar). You can delete the DMG afterwards.
+1. Double-click **M-EQ.dmg** to open it.
+2. Drag **M-EQ** onto the **Applications** folder shortcut in the same window.
+3. Eject the disk image (click ⏏ next to "M-EQ" in Finder's sidebar). You can delete the DMG afterwards.
 
 ### 3. Open it the first time
-Bass EQ is free and open source, but it isn't notarized by Apple (that needs a paid developer account), so
+M-EQ is free and open source, but it isn't notarized by Apple (that needs a paid developer account), so
 macOS blocks the first launch with a warning that Apple can't verify the app is free of malware.
 Open it once like this, and after that it opens normally:
 
 **macOS 15 Sequoia and later**
-1. Open **Applications** and double-click **BassEQ**. When the warning appears, click **Done**.
+1. Open **Applications** and double-click **M-EQ**. When the warning appears, click **Done**.
 2. Open **System Settings → Privacy & Security** and scroll down to **Security**.
-3. Next to *"BassEQ" was blocked to protect your Mac*, click **Open Anyway**, enter your password, then click **Open Anyway** again.
+3. Next to *"M-EQ" was blocked to protect your Mac*, click **Open Anyway**, enter your password, then click **Open Anyway** again.
 
 **macOS 14 Sonoma**
-1. Open **Applications**, **right-click** (or Control-click) **BassEQ** and choose **Open**.
+1. Open **Applications**, **right-click** (or Control-click) **M-EQ** and choose **Open**.
 2. Click **Open** in the dialog.
 
 **Or, from Terminal (any version):**
 ```sh
-xattr -dr com.apple.quarantine /Applications/BassEQ.app
+xattr -dr com.apple.quarantine /Applications/M-EQ.app
 ```
 
 ### 4. Allow audio access
-macOS then asks: *"Bass EQ would like to record this computer's audio."* Click **Allow**.
+macOS then asks: *"M-EQ would like to record this computer's audio."* Click **Allow**.
 The app needs this to equalize your sound. Nothing is recorded, saved or sent anywhere.
 
 If you missed the prompt: **System Settings → Privacy & Security → Screen & System Audio Recording**,
-turn on **Bass EQ**, then quit and reopen the app.
+turn on **M-EQ**, then quit and reopen the app.
 
 ### 5. Use it
 A slider icon appears in the menu bar. Click it, connect a Bluetooth speaker or headphones, and pick a
-preset or move the sliders. To start Bass EQ automatically, add it in
+preset or move the sliders. To start M-EQ automatically, add it in
 **System Settings → General → Login Items**.
 
 ---
@@ -140,31 +142,31 @@ audio. The EQ runs 15 filters per channel in native code with no allocations on 
 
 ## Requirements
 
-- **macOS 14.4 (Sonoma) or later.** Bass EQ uses Core Audio process taps, added in 14.4. It has been
+- **macOS 14.4 (Sonoma) or later.** M-EQ uses Core Audio process taps, added in 14.4. It has been
   developed and tested on macOS 26 on Apple silicon.
 - To build from source: **Xcode Command Line Tools** (`xcode-select --install`). Not needed for the DMG.
 
 ## Build from source
 
 ```sh
-git clone https://github.com/manojacharix/BassEQ.git
-cd BassEQ
+git clone https://github.com/manojacharix/M-EQ.git
+cd M-EQ
 ./scripts/setup-signing.sh   # one time, see "Signing" below
 ./build.sh
-open BassEQ.app
+open M-EQ.app
 ```
 
 A slider icon appears in the menu bar. Click it to open the equalizer. Builds you make yourself
 don't get the Gatekeeper warning (only downloaded copies do).
 
-To keep it, move `BassEQ.app` into `/Applications`. To start it at login, add it in
+To keep it, move `M-EQ.app` into `/Applications`. To start it at login, add it in
 **System Settings → General → Login Items**.
 
 On first launch, allow audio access as described in [step 4](#4-allow-audio-access) above.
 
 ### Signing
 
-`scripts/setup-signing.sh` creates a self-signed code-signing certificate ("BassEQ Local Signing") in
+`scripts/setup-signing.sh` creates a self-signed code-signing certificate ("M-EQ Local Signing") in
 its own keychain, and `build.sh` signs every build with it. Because the signature stays the same,
 macOS remembers your permission when you rebuild or update the app.
 
@@ -177,9 +179,9 @@ again after every rebuild.
 ./build.sh --unsigned
 ```
 
-This makes `dist/BassEQ.app` and `dist/BassEQ.dmg`: a universal build (Apple silicon and Intel) that
+This makes `dist/M-EQ.app` and `dist/M-EQ.dmg`: a universal build (Apple silicon and Intel) that
 uses no certificate at all. It carries only an *ad-hoc* signature, because Apple silicon Macs refuse to
-launch code with no signature whatsoever. It doesn't touch your normal `BassEQ.app`.
+launch code with no signature whatsoever. It doesn't touch your normal `M-EQ.app`.
 
 People who download it install it with the [Download and install](#download-and-install) steps above.
 
@@ -189,29 +191,29 @@ People who download it install it with the [Download and install](#download-and-
   saved or sent anywhere.** The app makes no network connections.
 - macOS calls this permission "recording" because the app has to read system audio to equalize it.
 - The only things stored are your EQ settings (in the app's preferences) and a short status log at
-  `~/Library/Logs/BassEQ.log`.
+  `~/Library/Logs/M-EQ.log`.
 
 ## Troubleshooting
 
 | Symptom | Fix |
 |---|---|
 | Icon shows a crossed-out speaker | No Bluetooth output is selected, or the switch is off. The status line in the panel says which. |
-| Signal meter stays empty while music plays | Allow Bass EQ under Privacy & Security → Screen & System Audio Recording, then relaunch. |
-| No sound at all | Quit Bass EQ from its panel; audio returns to normal immediately. Then check `~/Library/Logs/BassEQ.log`. |
+| Signal meter stays empty while music plays | Allow M-EQ under Privacy & Security → Screen & System Audio Recording, then relaunch. |
+| No sound at all | Quit M-EQ from its panel; audio returns to normal immediately. Then check `~/Library/Logs/M-EQ.log`. |
 | Distortion when boosting | Lower **Output trim**, turn on **Low cut**, or use a smaller boost. |
-| "Apple can't verify BassEQ is free of malware" | Expected for a downloaded copy; see [step 3](#3-open-it-the-first-time). |
+| "Apple can't verify M-EQ is free of malware" | Expected for a downloaded copy; see [step 3](#3-open-it-the-first-time). |
 | Panel freezes right after a rebuild | macOS is waiting on a permission prompt (only happens without stable signing). Answer it, and run `./scripts/setup-signing.sh`. |
 
 Command-line helpers:
 ```sh
-./BassEQ.app/Contents/MacOS/BassEQ --devices    # list outputs and which ones the EQ applies to
-./BassEQ.app/Contents/MacOS/BassEQ --selftest   # check the filter math against test tones
+./M-EQ.app/Contents/MacOS/M-EQ --devices    # list outputs and which ones the EQ applies to
+./M-EQ.app/Contents/MacOS/M-EQ --selftest   # check the filter math against test tones
 ./test.sh loop | sweep | 40 | 60 | 90 | 150 | 1000   # play test audio to hear the EQ
 ```
 
 ## How it works
 
-1. A **Core Audio process tap** captures the mixed output of every app (except Bass EQ itself) and
+1. A **Core Audio process tap** captures the mixed output of every app (except M-EQ itself) and
    mutes the original, so you don't hear it twice.
 2. A **private aggregate device** pairs that tap with your speaker. It's invisible to other apps and
    doesn't change your sound settings.
@@ -221,18 +223,36 @@ Command-line helpers:
 The filters use the standard RBJ *Audio EQ Cookbook* designs. `--selftest` plays sine waves through
 the actual audio code and checks the measured gain against the expected curve.
 
-The whole app is one Swift file: [`Sources/BassEQ.swift`](Sources/BassEQ.swift).
+The whole app is one Swift file: [`Sources/MEQ.swift`](Sources/MEQ.swift).
 
 ## Uninstall
 
+Quit M-EQ first, then:
+
 ```sh
-rm -rf /Applications/BassEQ.app                       # or wherever you put it
-defaults delete com.manojachari.basseq                # settings and presets
-rm -f ~/Library/Logs/BassEQ.log
-tccutil reset AudioCapture com.manojachari.basseq     # forget the permission (or remove it in
-                                                      # Privacy & Security → Screen & System Audio Recording)
+tccutil reset AudioCapture com.manojachari.meq     # forget the permission (run while the app still exists)
+rm -rf /Applications/M-EQ.app                      # or wherever you put it
+defaults delete com.manojachari.meq                # settings and presets
+rm -f ~/Library/Logs/M-EQ.log
 # If you ran setup-signing.sh:
-security delete-keychain ~/Library/Keychains/basseq-signing.keychain-db
+security delete-keychain ~/Library/Keychains/meq-signing.keychain-db
+rm -rf ~/.config/meq
+```
+
+If `tccutil` says *"No such bundle identifier"*, the app is already gone. Remove M-EQ under
+**System Settings → Privacy & Security → Screen & System Audio Recording** instead.
+
+### Upgrading from Bass EQ
+
+M-EQ copies your Bass EQ speaker profiles and custom presets on first launch. Because the app's
+identity changed, macOS asks for audio access once more. Once M-EQ works, clean up the old app:
+
+```sh
+tccutil reset AudioCapture com.manojachari.basseq  # before deleting BassEQ.app
+rm -rf /Applications/BassEQ.app
+defaults delete com.manojachari.basseq
+rm -f ~/Library/Logs/BassEQ.log
+security delete-keychain ~/Library/Keychains/basseq-signing.keychain-db 2>/dev/null
 rm -rf ~/.config/basseq
 ```
 
@@ -240,4 +260,4 @@ rm -rf ~/.config/basseq
 
 MIT, see [LICENSE](LICENSE).
 
-Bass EQ is an independent project and isn't affiliated with any speaker or headphone maker.
+M-EQ is an independent project and isn't affiliated with any speaker or headphone maker.
